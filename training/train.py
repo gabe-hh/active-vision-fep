@@ -53,8 +53,8 @@ def train(**config):
     # Initialise config parameters
     lr=config.get("learning_rate", 1e-4)
     batch_size=config.get("batch_size", 16)
-    img_size = config.get("img_size", (32,32))
-    img_scale = config.get("img_scale", 1)
+    img_size = config.get("img_size", 64,64)
+    img_scale = config.get("img_scale", 0.5)
     dataset_name = config.get("dataset_name", "scenes_data_simplebg2")
     manual_seed = config.get("manual_seed", None)
     min_subset_size = config.get("min_subset_size", 3) 
@@ -282,16 +282,6 @@ def train(**config):
             "test/unshaped/rec_loss":test_rec_avg, 
             "test/unshaped/reg_loss":test_reg_avg,
         }
-        if base_pl != 0:
-            train_metrics["train/p_loss"] = train_shaped_pl_avg
-            train_metrics["train/unshaped/p_loss"] = train_pl_avg
-            test_metrics["test/p_loss"] = test_shaped_pl_avg
-            test_metrics["test/unshaped/p_loss"] = test_pl_avg
-        if base_sl != 0:
-            train_metrics["train/s_loss"] = train_shaped_sl_avg
-            train_metrics["train/unshaped/s_loss"] = train_sl_avg
-            test_metrics["test/s_loss"] = test_shaped_sl_avg
-            test_metrics["test/unshaped/s_loss"] = test_sl_avg
 
         metrics = {"epoch":epoch, **train_metrics, **test_metrics}
         print(f"EPOCH {epoch} | TRAIN {train_metrics} | TEST {test_metrics}")
