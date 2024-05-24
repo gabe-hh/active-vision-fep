@@ -2,10 +2,10 @@ from model.model import VAE
 from model.loss import FreeEnergyLoss
 from model.som import SOM
 from controller.model_controller import VAEController
-import loss_schedulers
+from . import loss_schedulers
 import numpy as np
 import torch
-from training.utils import init_weights
+from .utils import init_weights
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 

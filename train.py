@@ -1,14 +1,14 @@
 from model.model import VAE
 from model.loss import FreeEnergyLoss
 from model.som import SOM
-import loss_schedulers
-from constructors import get_model, get_scheduler_from_config, get_som
+import training.loss_schedulers as loss_schedulers
+from training.constructors import get_model, get_scheduler_from_config, get_som
 from dataset.scene_dataset import SceneDataset
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
 import random
-import time
+import time, os
 from training.utils import enhance_image
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -48,13 +48,17 @@ DEFAULT_ENCODER = [{'filters': 16, 'kernel_size': 3, 'stride': 2, 'film': False}
 DEFAULT_DECODER = [{'filters': 16, 'kernel_size': 3, 'stride': 2, 'film': False}]
 
 def train(**config):
+
+    if not os.path.exists("models/"):
+        os.makedirs("models/")
+
     mdl_name = config.get("model_name", "actvis")
     print(mdl_name)
     # Initialise config parameters
     lr=config.get("learning_rate", 1e-4)
     batch_size=config.get("batch_size", 16)
-    img_size = config.get("img_size", 64,64)
-    img_scale = config.get("img_scale", 0.5)
+    img_size = config.get("img_size", (32,32))
+    img_scale = config.get("img_scale", 1)
     dataset_name = config.get("dataset_name", "scenes_data_simplebg2")
     manual_seed = config.get("manual_seed", None)
     min_subset_size = config.get("min_subset_size", 3) 
@@ -289,8 +293,20 @@ def train(**config):
         # Update best model and save
         if test_loss_avg < best_loss:
             best_loss = test_loss_avg
-            torch.save(model.state_dict(), f"models/new/{model_name}_best.pt")
+            torch.save(model.state_dict(), f"models/{model_name}_best.pt")
 
-        torch.save(model.state_dict(), f"models/new/{model_name}_latest.pt")
+        torch.save(model.state_dict(), f"models/{model_name}_latest.pt")
         et1 = time.time()
         print(f'Epoch time: {et1-et0}')
+
+from config import network_configs
+if __name__ == '__main__':
+    cfg = {"latent_size": 64, 
+           "encoder_config": network_configs.enc_3layer_8to32, 
+           "decoder_config": network_configs.dec_3layer_32to8, 
+           "dataset_name": "nobg",
+           "num_epochs": 100,
+           "img_size": (64,64),
+           "img_scale": 0.5 #Final size 32x32
+           }
+    train(**cfg)

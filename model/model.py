@@ -2,9 +2,9 @@ from torch import Tensor
 import torch
 import torch.nn as nn
 import torch.distributions as D
-from spatial_softmax import SpatialSoftmax, InverseSpatialSoftmax
-from film import FiLM, FiLMGen
-from utils import gumbel_softmax
+from .spatial_softmax import SpatialSoftmax, InverseSpatialSoftmax
+from .film import FiLM, FiLMGen
+from .utils import gumbel_softmax
 
 class PosteriorModel(nn.Module):
     def __init__(self, latent_size, aux_size, conv_config, in_size=(32,32), filmgen_hidden_dim=[64], use_ssm=False, ssm_temp=0.5, fc_sizes = None):

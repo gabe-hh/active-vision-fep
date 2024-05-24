@@ -1,5 +1,10 @@
 import os
+import numpy as np
+import torch
+import torch.nn.functional as F
 from torch.utils.data import Dataset
+import psutil
+import random
 
 class SceneDataset(Dataset):
     def __init__(self, dataset_dir, img_size=(48, 64), scale_factor=1, scene_length=120, load_into_memory=False, no_filter=False):
@@ -26,11 +31,11 @@ class SceneDataset(Dataset):
                 startx = x // 2 - self.img_size[1] // 2
                 starty = y // 2 - self.img_size[0] // 2
                 observations = observations[:, :, starty:starty+self.img_size[0], startx:startx+self.img_size[1]]
-                # Convert numpy arrays to torch tensors
+                # Convert numpy array‹s to torch tensors
                 observations_tensor = torch.from_numpy(observations).float()
                 views_tensor = torch.from_numpy(views).float()
 
-                # Resize observations if necessary
+                # Resize observations if necessaryÍ
                 if self.scale_factor != 1:
                     observations_tensor = F.interpolate(observations_tensor, scale_factor=self.scale_factor, mode='bilinear', align_corners=False)
 
